@@ -8,7 +8,7 @@
 #include <thread>
 #include <vector>
 
-#define N 200
+#define N 100
 //#define N 1000
 #define S 25
 #define MAX_WALKERS_PER_LOCATION 3
@@ -163,7 +163,6 @@ void WalkerI(int id)
         int currentX = walkers[id].currentX;
         int currentY = walkers[id].currentY;
         int nextX, nextY;
-        
         if (direction == 0) // North
         {
             nextX = walkers[id].currentX;
@@ -185,23 +184,38 @@ void WalkerI(int id)
             nextY = walkers[id].currentY;
         }
 
-        //Lock(&locMutexes[currentY][currentX]);
-        //Lock(&locMutexes[nextY][nextX]);
+        if (currentY < nextY || currentX < nextX)
+        {
+            Lock(&locMutexes[currentY][currentX]);
+            Lock(&locMutexes[nextY][nextX]);
+        }
+        else
+        {
+            Lock(&locMutexes[nextY][nextX]);
+            Lock(&locMutexes[currentY][currentX]);
+        }
         if (GetWalkersAtLocation(nextY, nextX) < MAX_WALKERS_PER_LOCATION)
         {
             MoveWalker(id, direction);
         }
-        //Unlock(&locMutexes[nextY][nextX]);
-        //Unlock(&locMutexes[currentY][currentX]);
-        
-
+        if (currentY < nextY || currentX < nextX)
+        {
+            Unlock(&locMutexes[nextY][nextX]);
+            Unlock(&locMutexes[currentY][currentX]);
+        }
+        else
+        {
+            Unlock(&locMutexes[currentY][currentX]);
+            Unlock(&locMutexes[nextY][nextX]);
+        }
     }
     walkers[id].hasArrived = true;
 
-    // uncomment below 3 lines to monitor progress
-    // Lock(&tcMutex);
-    // std::cout << "Threads Completed: " << ++tc << std::endl;
-    // Unlock(&tcMutex);
+    // uncomment below lines to monitor progress
+    Lock(&tcMutex);
+    std::cout << "Threads Completed: " << ++tc << std::endl;
+    Unlock(&tcMutex);
+    //std::cout << "Walker arrived: " << id << std::endl;
 }
 
 // ####################   End of your code ################################################################
