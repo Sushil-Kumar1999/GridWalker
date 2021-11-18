@@ -1,15 +1,14 @@
 //To be completed:
 // Student id:  967565
 // Student name: Sushil Kumar Kumar Satheesh Kumar
-// date:
+// date: 19th November 2021
 
 #include <iostream>
 #include <mutex>
 #include <thread>
 #include <vector>
 
-//#define N 1000
-#define N 300
+#define N 1000
 #define S 25
 #define MAX_WALKERS_PER_LOCATION 3
 #define MAX_WALKERS_PER_EDGE 4
