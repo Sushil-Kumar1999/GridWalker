@@ -8,7 +8,8 @@
 #include <thread>
 #include <vector>
 
-#define N 1000
+#define N 200
+//#define N 1000
 #define S 25
 #define MAX_WALKERS_PER_LOCATION 3
 #define MAX_WALKERS_PER_EDGE 4
@@ -139,12 +140,12 @@ bool HasReachedFinalDestination(int id)
     return hasReachedfinalY && hasReachedfinalX;
 }
 
-int GetWalkersAtLocation(int y, int x)
+int GetActiveWalkersAtLocation(int y, int x)
 {
     int count = 0;
     for (int i = 0; i < N; i++)
     {
-        if (walkers[i].currentY == y && walkers[i].currentX == x)
+        if (walkers[i].currentY == y && walkers[i].currentX == x && !walkers[i].hasArrived)
         {
             count++;
         }
@@ -181,7 +182,7 @@ void WalkerI(int id)
             nextY = walkers[id].currentY;
         }
 
-        if (GetWalkersAtLocation(nextY, nextX) < MAX_WALKERS_PER_LOCATION)
+        if (GetActiveWalkersAtLocation(nextY, nextX) < MAX_WALKERS_PER_LOCATION)
         {
             MoveWalker(id, direction);
         }
@@ -189,10 +190,10 @@ void WalkerI(int id)
   
     }
     walkers[id].hasArrived = true;
-   /* Lock(&mutex);
+    //Lock(&mutex);
     //std::cout << "Walker " << id << " has arrived"<<std::endl;
-    std::cout << "Threads Completed: " << ++tc << std::endl;
-    Unlock(&mutex);*/
+    //std::cout << "Threads Completed: " << ++tc << std::endl;
+    //Unlock(&mutex);
 }
 
 // ####################   End of your code ################################################################
