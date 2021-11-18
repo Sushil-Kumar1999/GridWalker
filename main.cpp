@@ -82,7 +82,7 @@ void CompareGrids(int a[S][S], int b[S][S])
 
 
 // ####################   Write Most of your code here ################################################################
-std::mutex mutex;
+std::mutex tcMutex;
 std::mutex walkerMutexes[N];
 std::mutex locMutexes[S][S];
 int tc = 0;
@@ -197,14 +197,14 @@ void WalkerI(int id)
 
     }
     walkers[id].hasArrived = true;
-    Lock(&mutex);
-    //std::cout << "Walker " << id << " has arrived"<<std::endl;
-    std::cout << "Threads Completed: " << ++tc << std::endl;
-    Unlock(&mutex);
+
+    // uncomment below 3 lines to monitor progress
+    // Lock(&tcMutex);
+    // std::cout << "Threads Completed: " << ++tc << std::endl;
+    // Unlock(&tcMutex);
 }
 
 // ####################   End of your code ################################################################
-
 
 void InitGame()
 {
