@@ -84,6 +84,7 @@ void CompareGrids(int a[S][S], int b[S][S])
 // ####################   Write Most of your code here ################################################################
 std::mutex mutex;
 std::mutex walkerMutexes[N];
+std::mutex locMutexes[S][S];
 int tc = 0;
 // 0 -> North
 // 1 -> South
@@ -140,12 +141,12 @@ bool HasReachedFinalDestination(int id)
     return hasReachedfinalY && hasReachedfinalX;
 }
 
-int GetActiveWalkersAtLocation(int y, int x)
+int GetWalkersAtLocation(int y, int x)
 {
     int count = 0;
     for (int i = 0; i < N; i++)
     {
-        if (walkers[i].currentY == y && walkers[i].currentX == x && !walkers[i].hasArrived)
+        if (walkers[i].currentY == y && walkers[i].currentX == x)
         {
             count++;
         }
@@ -159,6 +160,8 @@ void WalkerI(int id)
     while (!HasReachedFinalDestination(id))
     {
         int direction = GetRandomDirection(id);
+        int currentX = walkers[id].currentX;
+        int currentY = walkers[id].currentY;
         int nextX, nextY;
         
         if (direction == 0) // North
@@ -182,18 +185,22 @@ void WalkerI(int id)
             nextY = walkers[id].currentY;
         }
 
-        if (GetActiveWalkersAtLocation(nextY, nextX) < MAX_WALKERS_PER_LOCATION)
+        //Lock(&locMutexes[currentY][currentX]);
+        //Lock(&locMutexes[nextY][nextX]);
+        if (GetWalkersAtLocation(nextY, nextX) < MAX_WALKERS_PER_LOCATION)
         {
             MoveWalker(id, direction);
         }
+        //Unlock(&locMutexes[nextY][nextX]);
+        //Unlock(&locMutexes[currentY][currentX]);
         
-  
+
     }
     walkers[id].hasArrived = true;
-    //Lock(&mutex);
+    Lock(&mutex);
     //std::cout << "Walker " << id << " has arrived"<<std::endl;
-    //std::cout << "Threads Completed: " << ++tc << std::endl;
-    //Unlock(&mutex);
+    std::cout << "Threads Completed: " << ++tc << std::endl;
+    Unlock(&mutex);
 }
 
 // ####################   End of your code ################################################################
