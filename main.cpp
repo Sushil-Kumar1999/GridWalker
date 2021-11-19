@@ -86,15 +86,18 @@ int gridCount[S][S]; // keeps track of number of walkers at each location
 std::mutex tcMutex;
 int tc = 0;
 
-// 0 -> North
-// 1 -> South
-// 2 -> East
-// 3 -> West
+ /*
+ 0 -> North
+ 1 -> South
+ 2 -> East
+ 3 -> West 
+ */
 int GetRandomDirection(int id)
 {
     std::vector<int> directions = { 0, 1, 2, 3 };
     if (walkers[id].currentY == 0)
     {
+        // Reference: cdhowie's answer on https://stackoverflow.com/questions/27306086/c-remove-object-from-vector
         directions.erase(std::remove(directions.begin(), directions.end(), 0));
     }
     if (walkers[id].currentY == (S - 1))
