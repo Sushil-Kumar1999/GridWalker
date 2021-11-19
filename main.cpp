@@ -8,8 +8,7 @@
 #include <thread>
 #include <vector>
 
-#define N 100
-//#define N 1000
+#define N 1000
 #define S 25
 #define MAX_WALKERS_PER_LOCATION 3
 #define MAX_WALKERS_PER_EDGE 4
@@ -83,6 +82,7 @@ void CompareGrids(int a[S][S], int b[S][S])
 
 // ####################   Write Most of your code here ################################################################
 std::mutex locationMutexes[S][S];
+int gridCount[S][S]; // keeps track of number of walkers at each location
 std::mutex tcMutex;
 int tc = 0;
 
@@ -141,20 +141,6 @@ bool HasReachedFinalDestination(int id)
     return hasReachedfinalY && hasReachedfinalX;
 }
 
-int GetWalkersAtLocation(int y, int x)
-{
-    int count = 0;
-    for (int i = 0; i < N; i++)
-    {
-        if (walkers[i].currentY == y && walkers[i].currentX == x)
-        {
-            count++;
-        }
-    }
-
-    return count;
-}
-
 void WalkerI(int id)
 {
     while (!HasReachedFinalDestination(id))
@@ -194,9 +180,11 @@ void WalkerI(int id)
             Lock(&locationMutexes[nextY][nextX]);
             Lock(&locationMutexes[currentY][currentX]);
         }
-        if (GetWalkersAtLocation(nextY, nextX) < MAX_WALKERS_PER_LOCATION)
+        if (gridCount[nextY][nextX] < MAX_WALKERS_PER_LOCATION)
         {
+            gridCount[currentY][currentX]--;
             MoveWalker(id, direction);
+            gridCount[nextY][nextX]++;
         }
         if (currentY < nextY || currentX < nextX)
         {
@@ -211,11 +199,11 @@ void WalkerI(int id)
     }
     walkers[id].hasArrived = true;
 
+    std::cout << "Walker "<< id <<" has arrived" << std::endl;
     // uncomment below lines to monitor progress
-    //std::cout << "Walker "<< id <<" has arrived" << std::endl;
-    //Lock(&tcMutex);
-    //std::cout << "Threads Completed: " << ++tc << std::endl;
-    //Unlock(&tcMutex);
+    /*Lock(&tcMutex);
+    std::cout << "Threads Completed: " << ++tc << std::endl;
+    Unlock(&tcMutex);*/
 }
 
 // ####################   End of your code ################################################################
@@ -230,6 +218,7 @@ void InitGame()
         do walkers[i].Init();
         while (originalGridCount[walkers[i].currentY][walkers[i].currentX]>= MAX_WALKERS_PER_LOCATION);
         originalGridCount[walkers[i].currentY][walkers[i].currentX]++;
+        gridCount[walkers[i].currentY][walkers[i].currentX]++;
     }
     for (int i = 0; i < N; i++) //Initialising walkers' locations
         finalGridCount[walkers[i].finalY][walkers[i].finalX]++;
