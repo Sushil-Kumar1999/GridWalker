@@ -201,9 +201,11 @@ void WalkerI(int id)
 
     std::cout << "Walker "<< id <<" has arrived" << std::endl;
     // uncomment below lines to monitor progress
-    /*Lock(&tcMutex);
+    /*
+    Lock(&tcMutex);
     std::cout << "Threads Completed: " << ++tc << std::endl;
-    Unlock(&tcMutex);*/
+    Unlock(&tcMutex);
+    */
 }
 
 // ####################   End of your code ################################################################
@@ -245,4 +247,9 @@ int main()
     SetObtainedGrid();
     PrintGrid("\n\nObtained Result:\n\n", obtainedGridCount);
     CompareGrids(finalGridCount, obtainedGridCount);
+
+    /* Below code verifies data integrity of gridCount 
+       to ensure its not corrupted by any race condition
+    */
+    //CompareGrids(finalGridCount, gridCount);
 }
