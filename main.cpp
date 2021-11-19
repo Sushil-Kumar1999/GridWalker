@@ -82,10 +82,10 @@ void CompareGrids(int a[S][S], int b[S][S])
 
 
 // ####################   Write Most of your code here ################################################################
+std::mutex locationMutexes[S][S];
 std::mutex tcMutex;
-std::mutex walkerMutexes[N];
-std::mutex locMutexes[S][S];
 int tc = 0;
+
 // 0 -> North
 // 1 -> South
 // 2 -> East
@@ -186,13 +186,13 @@ void WalkerI(int id)
 
         if (currentY < nextY || currentX < nextX)
         {
-            Lock(&locMutexes[currentY][currentX]);
-            Lock(&locMutexes[nextY][nextX]);
+            Lock(&locationMutexes[currentY][currentX]);
+            Lock(&locationMutexes[nextY][nextX]);
         }
         else
         {
-            Lock(&locMutexes[nextY][nextX]);
-            Lock(&locMutexes[currentY][currentX]);
+            Lock(&locationMutexes[nextY][nextX]);
+            Lock(&locationMutexes[currentY][currentX]);
         }
         if (GetWalkersAtLocation(nextY, nextX) < MAX_WALKERS_PER_LOCATION)
         {
@@ -200,22 +200,22 @@ void WalkerI(int id)
         }
         if (currentY < nextY || currentX < nextX)
         {
-            Unlock(&locMutexes[nextY][nextX]);
-            Unlock(&locMutexes[currentY][currentX]);
+            Unlock(&locationMutexes[nextY][nextX]);
+            Unlock(&locationMutexes[currentY][currentX]);
         }
         else
         {
-            Unlock(&locMutexes[currentY][currentX]);
-            Unlock(&locMutexes[nextY][nextX]);
+            Unlock(&locationMutexes[currentY][currentX]);
+            Unlock(&locationMutexes[nextY][nextX]);
         }
     }
     walkers[id].hasArrived = true;
 
     // uncomment below lines to monitor progress
-    Lock(&tcMutex);
-    std::cout << "Threads Completed: " << ++tc << std::endl;
-    Unlock(&tcMutex);
-    //std::cout << "Walker arrived: " << id << std::endl;
+    //std::cout << "Walker "<< id <<" has arrived" << std::endl;
+    //Lock(&tcMutex);
+    //std::cout << "Threads Completed: " << ++tc << std::endl;
+    //Unlock(&tcMutex);
 }
 
 // ####################   End of your code ################################################################
