@@ -3,7 +3,7 @@
 #include <thread>
 #include <vector>
 
-#define N 1000
+#define N 350
 #define S 25
 #define MAX_WALKERS_PER_LOCATION 3
 #define MAX_WALKERS_PER_EDGE 4
@@ -30,7 +30,6 @@ Walker walkers[N];
 void Lock(std::mutex* m)
 {
     m->lock();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1)); //Sleeps to simulate longer execution time and increase the probability of an issue
 }
 
 void Unlock(std::mutex* m)
@@ -74,8 +73,6 @@ void CompareGrids(int a[S][S], int b[S][S])
     std::cout << "\nSeems to be OK!\n";
 }
 
-
-// ####################   Write Most of your code here ################################################################
 std::mutex locationMutexes[S][S];
 int gridCount[S][S]; // keeps track of number of walkers at each location
 std::mutex tcMutex;
@@ -196,17 +193,11 @@ void WalkerI(int id)
         }
     }
     walkers[id].hasArrived = true;
-
-    std::cout << "Walker "<< id <<" has arrived" << std::endl;
-    // uncomment below lines to monitor progress
-    /*
+   
     Lock(&tcMutex);
     std::cout << "Threads Completed: " << ++tc << std::endl;
     Unlock(&tcMutex);
-    */
 }
-
-// ####################   End of your code ################################################################
 
 void InitGame()
 {
@@ -244,10 +235,13 @@ int main()
     PrintGrid("\n\nIntended Result:\n\n", finalGridCount);
     SetObtainedGrid();
     PrintGrid("\n\nObtained Result:\n\n", obtainedGridCount);
+
+    std::cout << "\nComparing finalGridCount and obtainedGridCount: ";
     CompareGrids(finalGridCount, obtainedGridCount);
 
     /* Below code verifies data integrity of gridCount 
        to ensure its not corrupted by any race condition
     */
-    //CompareGrids(finalGridCount, gridCount);
+    std::cout << "\nComparing finalGridCount and gridCount: ";
+    CompareGrids(finalGridCount, gridCount);
 }
