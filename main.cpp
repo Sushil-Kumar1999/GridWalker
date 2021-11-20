@@ -1,8 +1,3 @@
-//To be completed:
-// Student id:  967565
-// Student name: Sushil Kumar Kumar Satheesh Kumar
-// date: 19th November 2021
-
 #include <iostream>
 #include <mutex>
 #include <thread>
